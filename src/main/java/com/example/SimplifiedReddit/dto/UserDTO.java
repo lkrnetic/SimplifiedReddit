@@ -5,10 +5,10 @@ import lombok.*;
 
 //@EqualsAndHashCode
 //@ToString
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-public class AppUserDTO {
+public class UserDTO {
+    private Long id;
     private String email;
     private String username;
     private String password;
