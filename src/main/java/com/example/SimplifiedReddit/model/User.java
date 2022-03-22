@@ -11,11 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Table(name="app_user")
-@Getter
-@Setter
-@EqualsAndHashCode
-@NoArgsConstructor
-@ToString
+@Data
 @Entity
 public class User implements UserDetails {
     @Id
@@ -30,13 +26,6 @@ public class User implements UserDetails {
 
     private Boolean locked = false;
     private Boolean enabled = false;
-
-    public User(String email, String username, String password, UserRole role) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

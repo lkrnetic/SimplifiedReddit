@@ -27,7 +27,7 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable Long id) {
         Optional<User> optionalAppUser = userServiceImpl.findById(id);
 
-        if (!optionalAppUser.isPresent()) {
+        if (optionalAppUser.isEmpty()) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
@@ -40,7 +40,7 @@ public class UserController {
         Optional<User> optionalUser = userServiceImpl.findById(id);
         HttpHeaders headers = new HttpHeaders();
 
-        if (!optionalUser.isPresent()) {
+        if (optionalUser.isEmpty()) {
             headers.add(ERROR_MESSAGE_KEY, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }

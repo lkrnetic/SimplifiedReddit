@@ -3,10 +3,9 @@ package com.example.SimplifiedReddit.dto;
 import lombok.*;
 
 
-//@EqualsAndHashCode
-//@ToString
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserDTO {
     private Long id;
     private String email;
