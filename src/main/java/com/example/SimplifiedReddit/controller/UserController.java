@@ -14,7 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path="api/users")
 public class UserController {
-    public static String ERROR_MESSAGE = "X-SimplifiedReddit-error";
+    public static String ERROR_MESSAGE_KEY = "X-SimplifiedReddit-error";
     private final UserServiceImpl userServiceImpl;
     private final UserMapper userMapper;
 
@@ -29,30 +29,29 @@ public class UserController {
 
         if (!optionalAppUser.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE, "User with given id doesn't exist.");
+            headers.add(ERROR_MESSAGE_KEY, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity(userMapper.userToUserDTO(optionalAppUser.get()), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.userToUserDTO(optionalAppUser.get()), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editUser(@RequestBody UserDTO userDTO, @PathVariable Long id) {
         Optional<User> optionalUser = userServiceImpl.findById(id);
+        HttpHeaders headers = new HttpHeaders();
 
         if (!optionalUser.isPresent()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE, "User with given id doesn't exist.");
+            headers.add(ERROR_MESSAGE_KEY, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
 
         if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE, "Password is empty or null.");
+            headers.add(ERROR_MESSAGE_KEY, "Password is empty or null.");
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
 
         User editedUser = userServiceImpl.editUser(userDTO);
-        return new ResponseEntity(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
 
     }
 
@@ -64,12 +63,12 @@ public class UserController {
 
         if (optionalAppUser.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE, "There is already user with email that was entered.");
+            headers.add(ERROR_MESSAGE_KEY, "There is already user with email that was entered.");
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
 
         User savedUser = userServiceImpl.createUser(userDTO);
-        return new ResponseEntity(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
+        return new ResponseEntity<>(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
 
     }
 }
