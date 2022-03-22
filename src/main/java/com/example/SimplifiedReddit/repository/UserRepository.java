@@ -1,6 +1,6 @@
 package com.example.SimplifiedReddit.repository;
 
-import com.example.SimplifiedReddit.model.AppUser;
+import com.example.SimplifiedReddit.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,14 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface AppUserRepository extends JpaRepository<AppUser, Long> {
-    Optional<AppUser> findById(Long id);
-    Optional<AppUser> findByEmail(String email);
-    @Transactional
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findById(Long id);
+    Optional<User> findByEmail(String email);
+
     @Modifying
-    @Query("UPDATE AppUser a " +
+    @Query("UPDATE User a " +
             "SET a.password = ?2 WHERE a.email = ?1")
-    int updatePassword(String email, String password);
+    void updatePassword(String email, String password);
 }
 
 

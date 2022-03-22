@@ -3,13 +3,13 @@ package com.example.SimplifiedReddit.dto;
 import lombok.*;
 
 
-//@EqualsAndHashCode
-//@ToString
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-public class AppUserDTO {
+@NoArgsConstructor
+public class UserDTO {
+    private Long id;
     private String email;
     private String username;
     private String password;
+    private String role;
 }

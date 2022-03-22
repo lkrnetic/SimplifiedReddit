@@ -1,7 +1,7 @@
 package com.example.SimplifiedReddit.model;
 
+import com.example.SimplifiedReddit.model.enums.UserRole;
 import lombok.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,45 +11,26 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Table(name="app_user")
-@Getter
-@Setter
-@EqualsAndHashCode
-@NoArgsConstructor
-@ToString
+@Data
 @Entity
-public class AppUser implements UserDetails {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     private String username;
     private String password;
+
     @Enumerated(EnumType.STRING)
-    private AppUserRole userRole;
+    private UserRole role;
+
     private Boolean locked = false;
     private Boolean enabled = false;
 
-    public AppUser(String email, String username, String password, AppUserRole userRole) {
-        this.email = email;
-        this.username = username;
-        this.password = password;
-        this.userRole = userRole;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.name());
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
         return Collections.singletonList(authority);
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
     }
 
     @Override
