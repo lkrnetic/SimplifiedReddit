@@ -18,17 +18,21 @@ import java.util.Optional;
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
@@ -41,21 +45,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Transactional
-    public User createUser(UserDTO userDTO) {
-        String encodedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
-        User user = new User(userDTO.getEmail(), userDTO.getUsername(), encodedPassword, UserRole.USER);
-        user.setEnabled(true);
+    public User createUser(User user) {
         User savedUser = userRepository.save(user);
         return savedUser;
     }
 
     @Transactional
-    public User editUser(UserDTO userDTO, Long id) {
-        String encodedPassword = bCryptPasswordEncoder.encode(userDTO.getPassword());
-        User updatedUser = new User(userDTO.getEmail(), userDTO.getUsername(), encodedPassword, UserRole.USER);
-        updatedUser.setId(id);
-        userRepository.updatePassword(updatedUser.getEmail(), updatedUser.getPassword());
-        return updatedUser;
+    public User editUser(User user) {
+        userRepository.updatePassword(user.getEmail(), user.getPassword());
+        return user;
     }
 
 }
