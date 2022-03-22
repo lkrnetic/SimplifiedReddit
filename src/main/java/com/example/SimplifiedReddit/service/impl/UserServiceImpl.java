@@ -23,7 +23,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
     @Transactional(readOnly = true)
     @Override
     public Optional<User> findByEmail(String email) {
@@ -35,8 +34,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
-
-
 
     @Transactional(readOnly = true)
     @Override
