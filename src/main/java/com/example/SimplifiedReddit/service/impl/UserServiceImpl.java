@@ -1,10 +1,12 @@
 package com.example.SimplifiedReddit.service.impl;
 
 import com.example.SimplifiedReddit.dto.UserDTO;
+import com.example.SimplifiedReddit.mapper.UserMapper;
 import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.model.enums.UserRole;
 import com.example.SimplifiedReddit.repository.UserRepository;
 import com.example.SimplifiedReddit.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,15 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
-
+@AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Transactional(readOnly = true)
     @Override
@@ -35,6 +36,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return userRepository.findById(id);
     }
 
+
+
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -45,13 +48,21 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Transactional
-    public User createUser(User user) {
-        User savedUser = userRepository.save(user);
-        return savedUser;
+    @Override
+    public User createUser(UserDTO userDTO) {
+        UserRole role = UserRole.USER;
+        User user = userMapper.userDTOtoUser(userDTO);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setEnabled(true);
+        user.setRole(role);
+        return userRepository.save(user);
     }
 
     @Transactional
-    public User editUser(User user) {
+    @Override
+    public User editUser(UserDTO userDTO) {
+        User user = userMapper.userDTOtoUser(userDTO);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.updatePassword(user.getEmail(), user.getPassword());
         return user;
     }

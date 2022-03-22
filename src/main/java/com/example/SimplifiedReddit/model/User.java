@@ -26,21 +26,21 @@ public class User implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private UserRole role;
 
     private Boolean locked = false;
     private Boolean enabled = false;
 
-    public User(String email, String username, String password, UserRole userRole) {
+    public User(String email, String username, String password, UserRole role) {
         this.email = email;
         this.username = username;
         this.password = password;
-        this.userRole = userRole;
+        this.role = role;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.name());
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());
         return Collections.singletonList(authority);
     }
 

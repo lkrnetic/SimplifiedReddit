@@ -3,7 +3,6 @@ package com.example.SimplifiedReddit.controller;
 import com.example.SimplifiedReddit.dto.UserDTO;
 import com.example.SimplifiedReddit.mapper.UserMapper;
 import com.example.SimplifiedReddit.model.User;
-import com.example.SimplifiedReddit.model.enums.UserRole;
 import com.example.SimplifiedReddit.service.impl.UserServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(path="api/users")
 public class UserController {
+    public static String ERROR_MESSAGE = "X-SimplifiedReddit-error";
     private final UserServiceImpl userServiceImpl;
     private final UserMapper userMapper;
 
@@ -29,10 +29,9 @@ public class UserController {
 
         if (!optionalAppUser.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("X-SimplifiedReddit-error", "User with given id doesn't exist.");
+            headers.add(ERROR_MESSAGE, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity(userMapper.userToUserDTO(optionalAppUser.get()), HttpStatus.OK);
     }
 
@@ -42,21 +41,17 @@ public class UserController {
 
         if (!optionalUser.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("X-SimplifiedReddit-error", "User with given id doesn't exist.");
-
+            headers.add(ERROR_MESSAGE, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
 
         if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("X-SimplifiedReddit-error", "Password is empty or null.");
-
+            headers.add(ERROR_MESSAGE, "Password is empty or null.");
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
 
-        UserRole userRole = UserRole.USER;
-        User editedUser = userServiceImpl.editUser(userMapper.userDTOtoUser(userDTO, userRole));
-
+        User editedUser = userServiceImpl.editUser(userDTO);
         return new ResponseEntity(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
 
     }
@@ -69,14 +64,11 @@ public class UserController {
 
         if (optionalAppUser.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add("X-SimplifiedReddit-error", "There is already user with email that was entered.");
-
+            headers.add(ERROR_MESSAGE, "There is already user with email that was entered.");
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
 
-        UserRole userRole = UserRole.USER;
-        User savedUser = userServiceImpl.createUser(userMapper.userDTOtoUser(userDTO, userRole));
-
+        User savedUser = userServiceImpl.createUser(userDTO);
         return new ResponseEntity(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
 
     }
