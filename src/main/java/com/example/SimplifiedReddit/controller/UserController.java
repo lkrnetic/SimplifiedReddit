@@ -3,6 +3,7 @@ package com.example.SimplifiedReddit.controller;
 import com.example.SimplifiedReddit.dto.UserDTO;
 import com.example.SimplifiedReddit.mapper.UserMapper;
 import com.example.SimplifiedReddit.model.User;
+import com.example.SimplifiedReddit.service.UserService;
 import com.example.SimplifiedReddit.service.impl.UserServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,17 +16,17 @@ import java.util.Optional;
 @RequestMapping(path="api/users")
 public class UserController {
     public static String ERROR_MESSAGE_KEY = "X-SimplifiedReddit-error";
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
     private final UserMapper userMapper;
 
-    public UserController(UserServiceImpl userServiceImpl, UserMapper userMapper) {
-        this.userServiceImpl = userServiceImpl;
+    public UserController(UserServiceImpl userService, UserMapper userMapper) {
+        this.userService = userService;
         this.userMapper = userMapper;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        Optional<User> optionalAppUser = userServiceImpl.findById(id);
+        Optional<User> optionalAppUser = userService.findById(id);
 
         if (optionalAppUser.isEmpty()) {
             HttpHeaders headers = new HttpHeaders();
@@ -37,7 +38,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editUser(@RequestBody UserDTO userDTO, @PathVariable Long id) {
-        Optional<User> optionalUser = userServiceImpl.findById(id);
+        Optional<User> optionalUser = userService.findById(id);
         HttpHeaders headers = new HttpHeaders();
 
         if (optionalUser.isEmpty()) {
@@ -50,14 +51,14 @@ public class UserController {
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
 
-        User editedUser = userServiceImpl.editUser(userDTO);
+        User editedUser = userService.editUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
-        Optional<User> optionalAppUser = userServiceImpl.findByEmail(userDTO.getEmail());
+        Optional<User> optionalAppUser = userService.findByEmail(userDTO.getEmail());
 
         if (optionalAppUser.isPresent()) {
             HttpHeaders headers = new HttpHeaders();
@@ -65,7 +66,7 @@ public class UserController {
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
 
-        User savedUser = userServiceImpl.createUser(userDTO);
+        User savedUser = userService.createUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
     }
 }
