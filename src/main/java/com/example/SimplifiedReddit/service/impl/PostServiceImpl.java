@@ -1,6 +1,8 @@
 package com.example.SimplifiedReddit.service.impl;
 
 import com.example.SimplifiedReddit.dto.PostDTO;
+import com.example.SimplifiedReddit.exception.ConflictException;
+import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.PostMapper;
 import com.example.SimplifiedReddit.model.Post;
 import com.example.SimplifiedReddit.model.User;
@@ -32,18 +34,52 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post createPost(PostDTO postDTO) {
-        User user = userRepository.findById(postDTO.getUserId()).get();
+    public Post createPost(PostDTO postDTO) throws ConflictException  {
+        Optional<User> optionalUser = userRepository.findById(postDTO.getUserId());
+
+        if (optionalUser.isEmpty()) {
+            throw new ConflictException("User with given id doesn't exist.");
+        }
+
         Post post = postMapper.postDTOtoPost(postDTO);
-        post.setUser(user);
+        post.setUser(optionalUser.get());
         return postRepository.save(post);
     }
 
     @Transactional
     @Override
-    public void deletePost(Long id) {
-        Post post = postRepository.getById(id);
-        postRepository.delete(post);
+    public Post editPost(PostDTO postDTO, Long id) throws NotFoundException {
+
+        Optional<Post> optionalPost = postRepository.findById(id);
+
+        if (optionalPost.isEmpty()) {
+            throw new NotFoundException("Post with given id doesn't exist.");
+        }
+
+        Optional<User> optionalUser = userRepository.findById(postDTO.getUserId());
+
+        if (optionalUser.isEmpty()) {
+            throw new NotFoundException("User with given id doesn't exist.");
+        }
+
+        Post post = postMapper.postDTOtoPost(postDTO);
+        post.setId(id);
+        post.setUser(optionalUser.get());
+
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    @Override
+    public void deletePost(Long id) throws NotFoundException {
+
+        Optional<Post> optionalPost = postRepository.findById(id);
+
+        if (optionalPost.isEmpty()) {
+            throw new NotFoundException("Post with given id doesn't exist.");
+        }
+
+        postRepository.deleteById(id);
     }
 
 }

@@ -49,11 +49,6 @@ public class UserController {
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
 
-        if (userDTO.getPassword() == null || userDTO.getPassword().isEmpty()) {
-            headers.add(ERROR_MESSAGE_KEY, "Password is empty or null.");
-            return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
-        }
-
         User editedUser = userService.editUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
     }
