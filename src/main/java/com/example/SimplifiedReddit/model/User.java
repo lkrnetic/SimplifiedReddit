@@ -21,9 +21,9 @@ public class User implements UserDetails {
     private Long id;
     @Email(message = "Received value for email isn't in appropriate format.")
     private String email;
-    @NotBlank(message = "Username is required")
+    @NotBlank(message = "Username is required.")
     private String username;
-    @NotBlank(message = "Password is required")
+    @NotBlank(message = "Password is required.")
     private String password;
 
     @Enumerated(EnumType.STRING)

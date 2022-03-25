@@ -4,7 +4,6 @@ import com.example.SimplifiedReddit.dto.UserDTO;
 import com.example.SimplifiedReddit.mapper.UserMapper;
 import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.service.UserService;
-import com.example.SimplifiedReddit.service.impl.UserServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +38,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editUser(@Valid @RequestBody UserDTO userDTO, @PathVariable Long id) {
+    public ResponseEntity<?> editUser(@RequestBody UserDTO userDTO, @PathVariable Long id) {
         Optional<User> optionalUser = userService.findById(id);
-        HttpHeaders headers = new HttpHeaders();
 
         if (optionalUser.isEmpty()) {
+            HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
@@ -56,9 +55,9 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
         Optional<User> optionalUser = userService.findByEmail(userDTO.getEmail());
+        HttpHeaders headers = new HttpHeaders();
 
         if (optionalUser.isPresent()) {
-            HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, "There is already user with email that was entered.");
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
@@ -66,5 +65,5 @@ public class UserController {
         User savedUser = userService.createUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
     }
-    
+
 }
