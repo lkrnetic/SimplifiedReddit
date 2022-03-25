@@ -4,36 +4,39 @@ import com.example.SimplifiedReddit.dto.UserDTO;
 import com.example.SimplifiedReddit.mapper.UserMapper;
 import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.service.UserService;
-import com.example.SimplifiedReddit.service.impl.UserServiceImpl;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path="api/users")
+@RequestMapping(path = "api/users")
 public class UserController {
     public static String ERROR_MESSAGE_KEY = "X-SimplifiedReddit-error";
     private final UserService userService;
     private final UserMapper userMapper;
 
-    public UserController(UserServiceImpl userService, UserMapper userMapper) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUser(@PathVariable Long id) {
-        Optional<User> optionalAppUser = userService.findById(id);
 
-        if (optionalAppUser.isEmpty()) {
+        Optional<User> optionalUser = userService.findById(id);
+
+        if (optionalUser.isEmpty()) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, "User with given id doesn't exist.");
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(userMapper.userToUserDTO(optionalAppUser.get()), HttpStatus.OK);
+
+        return new ResponseEntity<>(userMapper.userToUserDTO(optionalUser.get()), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -57,11 +60,11 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
-        Optional<User> optionalAppUser = userService.findByEmail(userDTO.getEmail());
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
+        Optional<User> optionalUser = userService.findByEmail(userDTO.getEmail());
+        HttpHeaders headers = new HttpHeaders();
 
-        if (optionalAppUser.isPresent()) {
-            HttpHeaders headers = new HttpHeaders();
+        if (optionalUser.isPresent()) {
             headers.add(ERROR_MESSAGE_KEY, "There is already user with email that was entered.");
             return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
         }
@@ -69,4 +72,5 @@ public class UserController {
         User savedUser = userService.createUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
     }
+
 }

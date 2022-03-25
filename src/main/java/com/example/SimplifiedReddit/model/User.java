@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,8 +19,11 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Email(message = "Received value for email isn't in appropriate format.")
     private String email;
+    @NotBlank(message = "Username is required.")
     private String username;
+    @NotBlank(message = "Password is required.")
     private String password;
 
     @Enumerated(EnumType.STRING)
