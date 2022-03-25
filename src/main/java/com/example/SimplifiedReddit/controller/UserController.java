@@ -52,7 +52,9 @@ public class UserController {
 
         User editedUser = userServiceImpl.editUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
+
     }
+
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -67,5 +69,6 @@ public class UserController {
 
         User savedUser = userServiceImpl.createUser(userDTO);
         return new ResponseEntity<>(userMapper.userToUserDTO(savedUser), HttpStatus.CREATED);
+
     }
 }
