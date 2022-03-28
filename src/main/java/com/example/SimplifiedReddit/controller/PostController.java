@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path="api/posts")
@@ -32,6 +33,15 @@ public class PostController {
                     headers.add(ERROR_MESSAGE_KEY, "Post with given id doesn't exist.");
                     return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
                 });
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getPosts() {
+        return new ResponseEntity<>(postService
+                .findAll()
+                .stream()
+                .map(postMapper::postToPostDTO)
+                .collect(Collectors.toList()),HttpStatus.OK);
     }
 
     @PostMapping
