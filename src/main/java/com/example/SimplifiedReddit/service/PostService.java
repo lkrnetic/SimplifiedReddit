@@ -6,6 +6,7 @@ import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.model.Post;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
@@ -13,6 +14,8 @@ public interface PostService {
 
     Post createPost(PostDTO postDTO) throws ConflictException;
     Post editPost(PostDTO postDTO, Long id) throws NotFoundException, ConflictException;
-
     void deletePost(Long id) throws NotFoundException;
+
+    List<Post> findAll();
+    List<Post> findAllByUserId(Long userId);
 }

@@ -12,6 +12,7 @@ import com.example.SimplifiedReddit.service.PostService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,7 +75,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public void deletePost(Long id) throws NotFoundException {
 
@@ -85,6 +86,18 @@ public class PostServiceImpl implements PostService {
         }
 
         postRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Post> findAll() {
+        return postRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Post> findAllByUserId(Long userId) {
+        return postRepository.findAllByUserId(userId);
     }
 
 }
