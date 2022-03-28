@@ -25,23 +25,32 @@ public class PostController {
         this.postMapper = postMapper;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getPost(@PathVariable Long id) {
+    @GetMapping
+    public ResponseEntity<?> getAllPosts() {
+        return new ResponseEntity<>(postService
+                .findAll()
+                .stream()
+                .map(postMapper::postToPostDTO)
+                .collect(Collectors.toList()),HttpStatus.OK);
+    }
+
+    @GetMapping(params = {"userId"})
+    public ResponseEntity<?> getPostsByUserId(@RequestParam  Long userId) {
+        return new ResponseEntity<>(postService
+                .findAllByUserId(userId)
+                .stream()
+                .map(postMapper::postToPostDTO)
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
+    @GetMapping(params = {"id"})
+    public ResponseEntity<?> getPostById(@RequestParam  Long id) {
         return postService.findById(id).map(post -> new ResponseEntity<>(postMapper.postToPostDTO(post), HttpStatus.OK))
                 .orElseGet(() -> {
                     HttpHeaders headers = new HttpHeaders();
                     headers.add(ERROR_MESSAGE_KEY, "Post with given id doesn't exist.");
                     return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
                 });
-    }
-
-    @GetMapping
-    public ResponseEntity<?> getPosts() {
-        return new ResponseEntity<>(postService
-                .findAll()
-                .stream()
-                .map(postMapper::postToPostDTO)
-                .collect(Collectors.toList()),HttpStatus.OK);
     }
 
     @PostMapping
@@ -56,8 +65,8 @@ public class PostController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> editPost(@Valid @RequestBody PostDTO postDTO, @PathVariable Long id) {
+    @PutMapping(params = {"id"})
+    public ResponseEntity<?> editPost(@Valid @RequestBody PostDTO postDTO, @RequestParam  Long id) {
         try {
             return new ResponseEntity<>(postMapper.postToPostDTO(postService.editPost(postDTO, id)), HttpStatus.OK);
         } catch (NotFoundException | ConflictException exception) {
@@ -67,8 +76,8 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePost(@PathVariable Long id) {
+    @DeleteMapping(params = {"id"})
+    public ResponseEntity<?> deletePost(@RequestParam  Long id) {
         try {
             postService.deletePost(id);
             return new ResponseEntity<>(HttpStatus.OK);

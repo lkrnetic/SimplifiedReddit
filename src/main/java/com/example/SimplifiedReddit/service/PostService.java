@@ -17,4 +17,5 @@ public interface PostService {
     void deletePost(Long id) throws NotFoundException;
 
     List<Post> findAll();
+    List<Post> findAllByUserId(Long userId);
 }

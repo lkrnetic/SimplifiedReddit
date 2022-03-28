@@ -75,7 +75,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public void deletePost(Long id) throws NotFoundException {
 
@@ -88,10 +88,16 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public List<Post> findAll() {
         return postRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Post> findAllByUserId(Long userId) {
+        return postRepository.findAllByUserId(userId);
     }
 
 }
