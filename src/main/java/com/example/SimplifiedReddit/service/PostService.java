@@ -12,7 +12,7 @@ public interface PostService {
     Optional<Post> findById(Long id);
 
     Post createPost(PostDTO postDTO) throws ConflictException;
-    Post editPost(PostDTO postDTO, Long id) throws NotFoundException;
+    Post editPost(PostDTO postDTO, Long id) throws NotFoundException, ConflictException;
 
     void deletePost(Long id) throws NotFoundException;
 }

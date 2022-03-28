@@ -12,6 +12,7 @@ import com.example.SimplifiedReddit.service.PostService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,7 +49,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post editPost(PostDTO postDTO, Long id) throws NotFoundException {
+    public Post editPost(PostDTO postDTO, Long id) throws NotFoundException, ConflictException {
 
         Optional<Post> optionalPost = postRepository.findById(id);
 
@@ -60,6 +61,10 @@ public class PostServiceImpl implements PostService {
 
         if (optionalUser.isEmpty()) {
             throw new NotFoundException("User with given id doesn't exist.");
+        }
+
+        if (!Objects.equals(optionalPost.get().getUser().getId(), postDTO.getUserId())) {
+            throw new ConflictException("User with given id isn't owner of the post.");
         }
 
         Post post = postMapper.postDTOtoPost(postDTO);

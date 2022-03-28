@@ -1,23 +1,16 @@
 package com.example.SimplifiedReddit.controller;
 
 import com.example.SimplifiedReddit.dto.PostDTO;
-import com.example.SimplifiedReddit.dto.UserDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.PostMapper;
-import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.service.PostService;
-import com.example.SimplifiedReddit.service.UserService;
-import com.example.SimplifiedReddit.service.impl.PostServiceImpl;
-import com.example.SimplifiedReddit.service.impl.UserServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(path="api/posts")
@@ -57,7 +50,7 @@ public class PostController {
     public ResponseEntity<?> editPost(@Valid @RequestBody PostDTO postDTO, @PathVariable Long id) {
         try {
             return new ResponseEntity<>(postMapper.postToPostDTO(postService.editPost(postDTO, id)), HttpStatus.OK);
-        } catch (NotFoundException exception) {
+        } catch (NotFoundException | ConflictException exception) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
             return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
