@@ -4,7 +4,6 @@ import com.example.SimplifiedReddit.dto.PostDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.model.Post;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +17,5 @@ public interface PostService {
 
     List<Post> findAll();
     List<Post> findAllByUserId(Long userId);
+    List<Post> findAllBySubredditId(Long subredditId);
 }

@@ -43,6 +43,15 @@ public class PostController {
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
+    @GetMapping(params = {"subredditId"})
+    public ResponseEntity<?> getPostsBySubredditId(@RequestParam  Long subredditId) {
+        return new ResponseEntity<>(postService
+                .findAllBySubredditId(subredditId)
+                .stream()
+                .map(postMapper::postToPostDTO)
+                .collect(Collectors.toList()), HttpStatus.OK);
+    }
+
     @GetMapping(params = {"id"})
     public ResponseEntity<?> getPostById(@RequestParam  Long id) {
         return postService.findById(id).map(post -> new ResponseEntity<>(postMapper.postToPostDTO(post), HttpStatus.OK))

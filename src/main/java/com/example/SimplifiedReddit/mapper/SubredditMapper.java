@@ -1,6 +1,7 @@
 package com.example.SimplifiedReddit.mapper;
 
 import com.example.SimplifiedReddit.dto.PostDTO;
+import com.example.SimplifiedReddit.dto.SubredditDTO;
 import com.example.SimplifiedReddit.model.Post;
 import com.example.SimplifiedReddit.model.Subreddit;
 import com.example.SimplifiedReddit.model.User;
@@ -12,25 +13,20 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring", uses = { UserService.class, SubredditService.class })
-public abstract class PostMapper {
+@Mapper(componentModel = "spring", uses = { UserService.class, SubredditService.class})
+public abstract class SubredditMapper {
     @Autowired
     private UserRepository userRepository;
-    @Autowired
     private SubredditRepository subredditRepository;
 
-    @Mapping(target = "subredditId", source = "subreddit.id")
     @Mapping(target = "userId", source = "user.id")
-    public abstract PostDTO postToPostDTO(Post post);
+    public abstract SubredditDTO subredditToSubredditDTO(Subreddit subreddit);
 
     @Mapping(target = "user", source = "userId")
-    @Mapping(target = "subreddit", source = "subredditId")
-    public abstract Post postDTOtoPost(PostDTO postDTO);
+    //@Mapping(target = "subreddit", source = "subredditId")
+    public abstract Subreddit subredditDTOtoSubreddit(SubredditDTO subredditDTO);
 
     User findUserById(Long userId) {
         return userRepository.findById(userId).get();
-    }
-    Subreddit findSubredditById(Long subredditId) {
-        return subredditRepository.findById(subredditId).get();
     }
 }

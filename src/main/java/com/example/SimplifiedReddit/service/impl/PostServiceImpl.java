@@ -5,8 +5,10 @@ import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.PostMapper;
 import com.example.SimplifiedReddit.model.Post;
+import com.example.SimplifiedReddit.model.Subreddit;
 import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.repository.PostRepository;
+import com.example.SimplifiedReddit.repository.SubredditRepository;
 import com.example.SimplifiedReddit.repository.UserRepository;
 import com.example.SimplifiedReddit.service.PostService;
 import org.springframework.stereotype.Service;
@@ -20,11 +22,13 @@ import java.util.Optional;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final SubredditRepository subredditRepository;
     private final PostMapper postMapper;
 
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, PostMapper postMapper) {
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, SubredditRepository subredditRepository, PostMapper postMapper) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.subredditRepository = subredditRepository;
         this.postMapper = postMapper;
     }
 
@@ -43,8 +47,16 @@ public class PostServiceImpl implements PostService {
             throw new ConflictException("User with given id doesn't exist.");
         }
 
+        Optional<Subreddit> optionalSubreddit = subredditRepository.findById(postDTO.getSubredditId());
+
+        if (optionalSubreddit.isEmpty()) {
+            throw new ConflictException("Subreddit with given id doesn't exist.");
+        }
+
         Post post = postMapper.postDTOtoPost(postDTO);
         post.setUser(optionalUser.get());
+        post.setSubreddit(optionalSubreddit.get());
+
         return postRepository.save(post);
     }
 
@@ -68,9 +80,20 @@ public class PostServiceImpl implements PostService {
             throw new ConflictException("User with given id isn't owner of the post.");
         }
 
+        Optional<Subreddit> optionalSubreddit = subredditRepository.findById(postDTO.getSubredditId());
+
+        if (optionalSubreddit.isEmpty()) {
+            throw new NotFoundException("Subreddit with given id doesn't exist.");
+        }
+
+        if (!Objects.equals(optionalPost.get().getSubreddit().getId(), postDTO.getSubredditId())) {
+            throw new ConflictException("Given id of subreddit doesn't belong to subreddit where post was created.");
+        }
+
         Post post = postMapper.postDTOtoPost(postDTO);
         post.setId(id);
         post.setUser(optionalUser.get());
+        post.setSubreddit(optionalSubreddit.get());
 
         return postRepository.save(post);
     }
@@ -98,6 +121,12 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<Post> findAllByUserId(Long userId) {
         return postRepository.findAllByUserId(userId);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Post> findAllBySubredditId(Long subredditId) {
+        return postRepository.findAllBySubredditId(subredditId);
     }
 
 }
