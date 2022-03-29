@@ -14,9 +14,12 @@ import javax.validation.constraints.Positive;
 public class SubredditDTO {
     private Long id;
     @NotBlank(message = "Name must not be blank or null.")
+
     private String name;
     @NotBlank(message = "Description must not be blank or null.")
+
     private String description;
+
     @NotNull(message = "User id must not be null.")
     @Positive(message = "Username id shouldn't be negative.")
     private Long userId;

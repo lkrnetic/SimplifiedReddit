@@ -13,12 +13,16 @@ import javax.validation.constraints.Positive;
 @NoArgsConstructor
 public class PostDTO {
     private Long id;
+
     @NotBlank(message = "Title must not be blank or null.")
     private String title;
+
     private String text;
+
     @NotNull(message = "User id must not be null.")
     @Positive(message = "Username id shouldn't be negative.")
     private Long userId;
+
     @NotNull(message = "Subreddit id must not be null.")
     @Positive(message = "Subreddit id shouldn't be negative.")
     private Long subredditId;

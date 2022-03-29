@@ -33,6 +33,16 @@ public class SubredditController {
                 .collect(Collectors.toList()),HttpStatus.OK);
     }
 
+    @GetMapping(params = {"id"})
+    public ResponseEntity<?> getSubredditById(@RequestParam  Long id) {
+        return subredditService.findById(id).map(subreddit -> new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subreddit), HttpStatus.OK))
+                .orElseGet(() -> {
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.add(ERROR_MESSAGE_KEY, "Subreddit with given id doesn't exist.");
+                    return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+                });
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createSubreddit(@RequestBody SubredditDTO subredditDTO) {
