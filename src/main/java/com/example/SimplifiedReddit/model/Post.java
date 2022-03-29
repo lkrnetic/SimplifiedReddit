@@ -26,7 +26,7 @@ public class Post {
     )
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(
             nullable = false,
             name = "subreddit_id"
