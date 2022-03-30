@@ -47,7 +47,7 @@ public class SubredditServiceImpl implements SubredditService{
         return subredditRepository.save(subreddit);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public void deleteSubreddit(Long id) throws NotFoundException {
         Optional<Subreddit> optionalSubreddit = subredditRepository.findById(id);

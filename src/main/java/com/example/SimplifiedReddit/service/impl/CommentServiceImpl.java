@@ -50,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(comment);
     }
 
+    @Transactional
     @Override
     public Comment editComment(CommentDTO commentDTO, Long id) throws NotFoundException, ConflictException {
         Comment comment = commentRepository.findById(id)
@@ -74,7 +75,7 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.save(commentMapper.commentDTOtoComment(commentDTO));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public void deleteComment(Long id) throws NotFoundException {
         commentRepository.delete(commentRepository.findById(id)

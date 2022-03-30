@@ -27,8 +27,6 @@ public class CommentController {
 
     @GetMapping(params = {"userId"})
     public ResponseEntity<?> getCommentsByUserId(@RequestParam Long userId) {
-        System.out.println("blabla1");
-        System.out.println(userId);
         return new ResponseEntity<>(commentService
                 .findAllByUserId(userId)
                 .stream()
@@ -38,8 +36,6 @@ public class CommentController {
 
     @GetMapping(params = {"postId"})
     public ResponseEntity<?> getCommentsByPostId(@RequestParam  Long postId) {
-        System.out.println(postId);
-        System.out.println("blabla2");
         return new ResponseEntity<>(commentService
                 .findAllByPostId(postId)
                 .stream()
@@ -49,7 +45,6 @@ public class CommentController {
 
     @GetMapping(params = {"id"})
     public ResponseEntity<?> getCommentById(@RequestParam  Long id) {
-        System.out.println("blabla3");
         return commentService.findById(id).map(comment -> new ResponseEntity<>(commentMapper.commentToCommentDTO(comment), HttpStatus.OK))
                 .orElseGet(() -> {
                     HttpHeaders headers = new HttpHeaders();
@@ -63,7 +58,6 @@ public class CommentController {
     public ResponseEntity<?> createComment(@Valid @RequestBody CommentDTO commentDTO) {
         try {
             return new ResponseEntity<>(commentMapper.commentToCommentDTO(commentService.createComment(commentDTO)), HttpStatus.OK);
-
         } catch (ConflictException exception) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
@@ -75,7 +69,6 @@ public class CommentController {
     public ResponseEntity<?> editComment(@Valid @RequestBody CommentDTO commentDTO, @RequestParam  Long id) {
         try {
             return new ResponseEntity<>(commentMapper.commentToCommentDTO(commentService.editComment(commentDTO, id)), HttpStatus.OK);
-
         } catch (NotFoundException | ConflictException exception) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
@@ -88,7 +81,6 @@ public class CommentController {
         try {
             commentService.deleteComment(id);
             return new ResponseEntity<>(HttpStatus.OK);
-
         } catch (NotFoundException exception) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(ERROR_MESSAGE_KEY, exception.getMessage());

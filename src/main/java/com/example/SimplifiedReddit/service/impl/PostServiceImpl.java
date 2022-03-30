@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(postMapper.postDTOtoPost(postDTO));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public void deletePost(Long id) throws NotFoundException {
         Optional<Post> optionalPost = postRepository.findById(id);
