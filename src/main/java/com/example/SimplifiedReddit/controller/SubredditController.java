@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 @RestController
@@ -45,7 +46,7 @@ public class SubredditController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createSubreddit(@RequestBody SubredditDTO subredditDTO) {
+    public ResponseEntity<?> createSubreddit(@Valid @RequestBody SubredditDTO subredditDTO) {
         try {
             return new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subredditService.createSubreddit(subredditDTO)), HttpStatus.OK);
         } catch (ConflictException exception) {

@@ -53,17 +53,12 @@ public class PostServiceImpl implements PostService {
             throw new ConflictException("Subreddit with given id doesn't exist.");
         }
 
-        Post post = postMapper.postDTOtoPost(postDTO);
-        post.setUser(optionalUser.get());
-        post.setSubreddit(optionalSubreddit.get());
-
-        return postRepository.save(post);
+        return postRepository.save(postMapper.postDTOtoPost(postDTO));
     }
 
     @Transactional
     @Override
     public Post editPost(PostDTO postDTO, Long id) throws NotFoundException, ConflictException {
-
         Optional<Post> optionalPost = postRepository.findById(id);
 
         if (optionalPost.isEmpty()) {
@@ -90,18 +85,14 @@ public class PostServiceImpl implements PostService {
             throw new ConflictException("Given id of subreddit doesn't belong to subreddit where post was created.");
         }
 
-        Post post = postMapper.postDTOtoPost(postDTO);
-        post.setId(id);
-        post.setUser(optionalUser.get());
-        post.setSubreddit(optionalSubreddit.get());
+        postDTO.setId(id);
 
-        return postRepository.save(post);
+        return postRepository.save(postMapper.postDTOtoPost(postDTO));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public void deletePost(Long id) throws NotFoundException {
-
         Optional<Post> optionalPost = postRepository.findById(id);
 
         if (optionalPost.isEmpty()) {
