@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class SubredditServiceImpl implements SubredditService{
     private SubredditRepository subredditRepository;
@@ -48,9 +47,9 @@ public class SubredditServiceImpl implements SubredditService{
         return subredditRepository.save(subreddit);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public void deleteSubreddit(Long id) throws NotFoundException {
-
         Optional<Subreddit> optionalSubreddit = subredditRepository.findById(id);
 
         if (optionalSubreddit.isEmpty()) {

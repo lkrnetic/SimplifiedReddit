@@ -14,15 +14,21 @@ import java.util.Collections;
 
 @Table(name="app_user")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Entity
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Email(message = "Received value for email isn't in appropriate format.")
     private String email;
+
     @NotBlank(message = "Username is required.")
     private String username;
+
     @NotBlank(message = "Password is required.")
     private String password;
 
@@ -30,6 +36,7 @@ public class User implements UserDetails {
     private UserRole role;
 
     private Boolean locked = false;
+
     private Boolean enabled = false;
 
     @Override
