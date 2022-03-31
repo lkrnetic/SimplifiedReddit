@@ -5,7 +5,7 @@ import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.SubredditMapper;
 import com.example.SimplifiedReddit.service.SubredditService;
-import org.springframework.http.HttpHeaders;
+import com.example.SimplifiedReddit.util.HeaderUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path="api/subreddits")
 public class SubredditController {
-    public static String ERROR_MESSAGE_KEY = "X-SimplifiedReddit-error";
     private final SubredditService subredditService;
     private final SubredditMapper subredditMapper;
 
@@ -31,28 +30,23 @@ public class SubredditController {
                 .findAll()
                 .stream()
                 .map(subredditMapper::subredditToSubredditDTO)
-                .collect(Collectors.toList()),HttpStatus.OK);
+                .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @GetMapping(params = {"id"})
     public ResponseEntity<?> getSubredditById(@RequestParam  Long id) {
         return subredditService.findById(id).map(subreddit -> new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subreddit), HttpStatus.OK))
-                .orElseGet(() -> {
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add(ERROR_MESSAGE_KEY, "Subreddit with given id doesn't exist.");
-                    return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
-                });
+                .orElseGet(() -> new ResponseEntity<>(HeaderUtil.createError("Subreddit with given id doesn't exist."), HttpStatus.NOT_FOUND));
+
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createSubreddit(@Valid @RequestBody SubredditDTO subredditDTO) {
         try {
-            return new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subredditService.createSubreddit(subredditDTO)), HttpStatus.OK);
+            return new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subredditService.createSubreddit(subredditDTO)), HttpStatus.CREATED);
         } catch (ConflictException exception) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
-            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -62,9 +56,7 @@ public class SubredditController {
             subredditService.deleteSubreddit(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NotFoundException exception) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
-            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
