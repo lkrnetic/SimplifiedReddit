@@ -56,13 +56,7 @@ public class VoteServiceImpl implements VoteService {
 
         Vote vote = voteRepository.save(voteMapper.voteDTOtoVote(voteDTO));
 
-        if (vote.getVoteType() == VoteType.UPVOTE) {
-            post.setVoteCount(post.getVoteCount() + 1);
-        }
-        else  {
-            post.setVoteCount(post.getVoteCount() - 1);
-        }
-
+        post.setVoteCount(post.updateVoteCount(post, vote));
         postRepository.save(post);
 
         return vote;
@@ -102,14 +96,7 @@ public class VoteServiceImpl implements VoteService {
         voteRepository.save(vote);
 
         Post post = optionalPost.get();
-
-        if (vote.getVoteType() == VoteType.UPVOTE) {
-            post.setVoteCount(post.getVoteCount() + 1);
-        }
-        else  {
-            post.setVoteCount(post.getVoteCount() - 1);
-        }
-
+        post.setVoteCount(post.updateVoteCount(post, vote));
         postRepository.save(post);
 
         return vote;
