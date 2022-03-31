@@ -41,7 +41,6 @@ public class SubredditController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createSubreddit(@Valid @RequestBody SubredditDTO subredditDTO) {
         try {
             return new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subredditService.createSubreddit(subredditDTO)), HttpStatus.CREATED);
@@ -54,7 +53,7 @@ public class SubredditController {
     public ResponseEntity<?> deleteSubreddit(@RequestParam  Long id) {
         try {
             subredditService.deleteSubreddit(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NotFoundException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }

@@ -53,6 +53,8 @@ public class PostServiceImpl implements PostService {
             throw new ConflictException("Subreddit with given id doesn't exist.");
         }
 
+        postDTO.setVoteCount(0);
+
         return postRepository.save(postMapper.postDTOtoPost(postDTO));
     }
 

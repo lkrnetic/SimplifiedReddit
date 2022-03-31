@@ -58,7 +58,6 @@ public class PostController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createPost(@Valid @RequestBody PostDTO postDTO) {
         try {
             return new ResponseEntity<>(postMapper.postToPostDTO(postService.createPost(postDTO)), HttpStatus.CREATED);
@@ -80,9 +79,9 @@ public class PostController {
     public ResponseEntity<?> deletePost(@RequestParam  Long id) {
         try {
             postService.deletePost(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NotFoundException exception) {
-            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 

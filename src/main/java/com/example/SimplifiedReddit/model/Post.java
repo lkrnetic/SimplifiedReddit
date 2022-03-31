@@ -24,6 +24,8 @@ public class Post {
     @Lob
     private String text;
 
+    private Integer voteCount;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(
             nullable = false,

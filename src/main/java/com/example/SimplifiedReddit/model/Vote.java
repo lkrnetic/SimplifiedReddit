@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Table(name="vote")
 @Data
@@ -21,11 +22,13 @@ public class Vote {
 
     @Enumerated(EnumType.STRING)
     private VoteType voteType;
+
     @NotNull
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "postId", referencedColumnName = "postId")
+    @ManyToOne
+    @JoinColumn(name = "post_id")
     private Post post;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
 }

@@ -49,7 +49,6 @@ public class CommentController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createComment(@Valid @RequestBody CommentDTO commentDTO) {
         try {
             return new ResponseEntity<>(commentMapper.commentToCommentDTO(commentService.createComment(commentDTO)), HttpStatus.OK);
@@ -71,7 +70,7 @@ public class CommentController {
     public ResponseEntity<?> deleteComment(@RequestParam  Long id) {
         try {
             commentService.deleteComment(id);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NotFoundException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
