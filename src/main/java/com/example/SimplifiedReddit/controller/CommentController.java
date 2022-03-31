@@ -5,7 +5,7 @@ import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.CommentMapper;
 import com.example.SimplifiedReddit.service.CommentService;
-import org.springframework.http.HttpHeaders;
+import com.example.SimplifiedReddit.util.HeaderUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(path="api/comments")
 public class CommentController {
-    public static String ERROR_MESSAGE_KEY = "X-SimplifiedReddit-error";
     private final CommentService commentService;
     private final CommentMapper commentMapper;
 
@@ -46,11 +45,7 @@ public class CommentController {
     @GetMapping(params = {"id"})
     public ResponseEntity<?> getCommentById(@RequestParam  Long id) {
         return commentService.findById(id).map(comment -> new ResponseEntity<>(commentMapper.commentToCommentDTO(comment), HttpStatus.OK))
-                .orElseGet(() -> {
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.add(ERROR_MESSAGE_KEY, "Post with given id doesn't exist.");
-                    return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
-                });
+                .orElseGet(() -> new ResponseEntity<>(HeaderUtil.createError("Comment with given id doesn't exist."), HttpStatus.NOT_FOUND));
     }
 
     @PostMapping
@@ -59,9 +54,7 @@ public class CommentController {
         try {
             return new ResponseEntity<>(commentMapper.commentToCommentDTO(commentService.createComment(commentDTO)), HttpStatus.OK);
         } catch (ConflictException exception) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
-            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,9 +63,7 @@ public class CommentController {
         try {
             return new ResponseEntity<>(commentMapper.commentToCommentDTO(commentService.editComment(commentDTO, id)), HttpStatus.OK);
         } catch (NotFoundException | ConflictException exception) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
-            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -82,9 +73,7 @@ public class CommentController {
             commentService.deleteComment(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NotFoundException exception) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(ERROR_MESSAGE_KEY, exception.getMessage());
-            return new ResponseEntity<>(headers, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
