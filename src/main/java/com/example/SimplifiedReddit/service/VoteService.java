@@ -10,9 +10,10 @@ import java.util.Optional;
 public interface VoteService {
     Optional<Vote> findById(Long id);
 
+    Vote getById(Long id) throws ConflictException;
+
     Vote createVote(VoteDTO voteDTO) throws ConflictException;
     Vote editVote(VoteDTO voteDTO, Long id) throws ConflictException;
 
-    @Transactional
     void deleteVote(Long id) throws ConflictException;
 }

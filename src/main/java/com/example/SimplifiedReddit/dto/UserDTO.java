@@ -1,5 +1,6 @@
 package com.example.SimplifiedReddit.dto;
 
+import com.example.SimplifiedReddit.model.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +23,5 @@ public class UserDTO {
     @NotBlank(message = "Password must not be blank or null.")
     private String password;
 
-    private String role;
+    private UserRole role;
 }

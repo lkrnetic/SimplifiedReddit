@@ -34,7 +34,7 @@ public class SubredditController {
     }
 
     @GetMapping(params = {"id"})
-    public ResponseEntity<?> getSubredditById(@RequestParam  Long id) {
+    public ResponseEntity<?> getSubredditById(@RequestParam Long id) {
         return subredditService.findById(id).map(subreddit -> new ResponseEntity<>(subredditMapper.subredditToSubredditDTO(subreddit), HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HeaderUtil.createError("Subreddit with given id doesn't exist."), HttpStatus.NOT_FOUND));
 
@@ -54,7 +54,7 @@ public class SubredditController {
         try {
             subredditService.deleteSubreddit(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (NotFoundException exception) {
+        } catch (ConflictException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }

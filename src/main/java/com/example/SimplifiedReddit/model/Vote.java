@@ -31,4 +31,7 @@ public class Vote {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    private boolean isEdited = false;
+
 }

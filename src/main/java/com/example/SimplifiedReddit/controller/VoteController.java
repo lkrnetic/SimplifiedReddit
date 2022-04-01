@@ -13,11 +13,11 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "api/votes")
-public class VoteContoller {
+public class VoteController {
     private final VoteService voteService;
     private final VoteMapper voteMapper;
 
-    public VoteContoller(VoteService voteService, VoteMapper voteMapper) {
+    public VoteController(VoteService voteService, VoteMapper voteMapper) {
         this.voteService = voteService;
         this.voteMapper = voteMapper;
     }

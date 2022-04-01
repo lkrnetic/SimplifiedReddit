@@ -2,6 +2,7 @@ package com.example.SimplifiedReddit.mapper;
 
 import com.example.SimplifiedReddit.dto.CommentDTO;
 import com.example.SimplifiedReddit.dto.PostDTO;
+import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.model.Comment;
 import com.example.SimplifiedReddit.model.Post;
 import com.example.SimplifiedReddit.model.User;
@@ -9,6 +10,7 @@ import com.example.SimplifiedReddit.service.PostService;
 import com.example.SimplifiedReddit.service.UserService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring", uses = { UserService.class, PostService.class })
@@ -22,15 +24,18 @@ public abstract class CommentMapper {
     @Mapping(target = "userId", source = "user.id")
     public abstract CommentDTO commentToCommentDTO(Comment comment);
 
-    @Mapping(target = "user", source = "commentDTO.userId")
-    @Mapping(target = "post", source = "commentDTO.postId")
+    @Mapping(target = "user", source = "userId", qualifiedByName = "getUserById")
+    @Mapping(target = "post", source = "postId", qualifiedByName = "getPostById")
     public abstract Comment commentDTOtoComment(CommentDTO commentDTO);
 
-    User findUserById(Long userId) {
-        return userService.findById(userId).get();
+    @Named("getUserById")
+    User getUserById(Long userId) throws ConflictException {
+        return userService.getById(userId);
     }
-    Post findPostById(Long postId) {
-        return postService.findById(postId).get();
+
+    @Named("getPostById")
+    Post getPostById(Long postId) throws ConflictException {
+        return postService.getById(postId);
     }
 
 }

@@ -25,4 +25,6 @@ public class VoteDTO {
 
     @NotNull(message = "Vote type must not be null.")
     private VoteType voteType;
+
+    private boolean isEdited;
 }

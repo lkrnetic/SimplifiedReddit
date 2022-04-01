@@ -9,11 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
+    Post getById(Long id) throws ConflictException;
+
     Optional<Post> findById(Long id);
 
     Post createPost(PostDTO postDTO) throws ConflictException;
-    Post editPost(PostDTO postDTO, Long id) throws NotFoundException, ConflictException;
-    void deletePost(Long id) throws NotFoundException;
+    Post editPost(PostDTO postDTO, Long id) throws ConflictException;
+    void deletePost(Long id) throws ConflictException;
 
     List<Post> findAll();
     List<Post> findAllByUserId(Long userId);

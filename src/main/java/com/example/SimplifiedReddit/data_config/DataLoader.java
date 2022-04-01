@@ -16,7 +16,6 @@ import java.util.List;
 
 @Component
 public class DataLoader implements ApplicationRunner {
-
     private UserRepository userRepository;
     private SubredditRepository subredditRepository;
     private PostRepository postRepository;

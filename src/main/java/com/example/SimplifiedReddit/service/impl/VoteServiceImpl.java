@@ -35,6 +35,12 @@ public class VoteServiceImpl implements VoteService {
         return voteRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Vote getById(Long id) throws ConflictException {
+        return voteRepository.findById(id).orElseThrow(() -> new ConflictException("Vote with given id doesn't exist."));
+    }
+
     @Transactional
     @Override
     public Vote createVote(VoteDTO voteDTO) throws ConflictException {
@@ -43,10 +49,8 @@ public class VoteServiceImpl implements VoteService {
             throw new ConflictException("Vote type doesn't have appropriate value.");
         }
 
-        User user = userRepository.findById(voteDTO.getUserId())
-                .orElseThrow(() -> new ConflictException("User with given id doesn't exist."));
-        Post post = postRepository.findById(voteDTO.getPostId())
-                .orElseThrow(() -> new ConflictException("Post with given id doesn't exist."));
+        User user = userRepository.getById(voteDTO.getUserId());
+        Post post = postRepository.getById(voteDTO.getPostId());
 
         Optional<Vote> optionalVote = voteRepository.findByUserAndPost(user, post);
 
@@ -54,48 +58,39 @@ public class VoteServiceImpl implements VoteService {
             throw new ConflictException("Vote type already exist in database");
         }
 
-        Vote vote = voteRepository.save(voteMapper.voteDTOtoVote(voteDTO));
+        Vote savedVote = voteRepository.save(voteMapper.voteDTOtoVote(voteDTO));
 
-        post.setVoteCount(post.updateVoteCount(post, vote));
+        post.setVoteCount(post.updateVoteCount(post, savedVote));
         postRepository.save(post);
 
-        return vote;
+        return savedVote;
     }
 
     @Transactional
     @Override
     public Vote editVote(VoteDTO voteDTO, Long id) throws ConflictException {
-        Vote vote = voteRepository.findById(id)
-                .orElseThrow(() -> new ConflictException("Vote with given id doesn't exist."));
+        Vote vote = voteRepository.getById(id);
 
         if (vote.getVoteType() == voteDTO.getVoteType()) {
             throw new ConflictException("Vote can't be updated with same type.");
         }
 
-        Optional<User> optionalUser = userRepository.findById(voteDTO.getUserId());
-
-        if (optionalUser.isEmpty()) {
-            throw new ConflictException("User with given id doesn't exist.");
-        }
+        userRepository.getById(voteDTO.getUserId());
 
         if (!Objects.equals(vote.getUser().getId(), voteDTO.getUserId())) {
             throw new ConflictException("User with given id isn't owner of the vote.");
         }
 
-        Optional<Post> optionalPost = postRepository.findById(voteDTO.getPostId());
-
-        if (optionalPost.isEmpty()) {
-            throw new ConflictException("Post with given id doesn't exist.");
-        }
+        Post post = postRepository.getById(voteDTO.getPostId());
 
         if (!Objects.equals(vote.getPost().getId(), voteDTO.getPostId())) {
             throw new ConflictException("Given post doesn't doesn't contain given vote.");
         }
 
+        vote.setEdited(true);
         vote.setVoteType(voteDTO.getVoteType());
         voteRepository.save(vote);
 
-        Post post = optionalPost.get();
         post.setVoteCount(post.updateVoteCount(post, vote));
         postRepository.save(post);
 
@@ -104,17 +99,16 @@ public class VoteServiceImpl implements VoteService {
 
     @Transactional
     @Override
-    public void deleteVote(Long id) throws ConflictException {
-        Vote vote = voteRepository.findById(id)
-                .orElseThrow(() -> new ConflictException("Vote with given id doesn't exist."));
+    public void deleteVote(Long id) {
+        Vote vote = voteRepository.getById(id);
 
         Post post = vote.getPost();
 
-        if (vote.getVoteType() == VoteType.UPVOTE) {
-            post.setVoteCount(post.getVoteCount() - 1);
-        }
-        else  {
-            post.setVoteCount(post.getVoteCount() + 1);
+        if (!vote.isEdited()) {
+            if (vote.getVoteType() == VoteType.UPVOTE) {
+                post.setVoteCount(post.getVoteCount() - 1);
+            }
+            else  { post.setVoteCount(post.getVoteCount() + 1); }
         }
 
         voteRepository.delete(vote);

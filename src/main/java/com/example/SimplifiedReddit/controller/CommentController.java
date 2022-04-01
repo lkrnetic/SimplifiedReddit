@@ -2,7 +2,6 @@ package com.example.SimplifiedReddit.controller;
 
 import com.example.SimplifiedReddit.dto.CommentDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.CommentMapper;
 import com.example.SimplifiedReddit.service.CommentService;
 import com.example.SimplifiedReddit.util.HeaderUtil;
@@ -61,7 +60,7 @@ public class CommentController {
     public ResponseEntity<?> editComment(@Valid @RequestBody CommentDTO commentDTO, @RequestParam  Long id) {
         try {
             return new ResponseEntity<>(commentMapper.commentToCommentDTO(commentService.editComment(commentDTO, id)), HttpStatus.OK);
-        } catch (NotFoundException | ConflictException exception) {
+        } catch (ConflictException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
@@ -71,7 +70,7 @@ public class CommentController {
         try {
             commentService.deleteComment(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (NotFoundException exception) {
+        } catch (ConflictException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
