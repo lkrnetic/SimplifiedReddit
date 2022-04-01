@@ -1,6 +1,5 @@
 package com.example.SimplifiedReddit.repository;
 
-import com.example.SimplifiedReddit.model.Comment;
 import com.example.SimplifiedReddit.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

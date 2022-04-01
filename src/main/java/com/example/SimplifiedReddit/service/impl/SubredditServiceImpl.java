@@ -2,7 +2,6 @@ package com.example.SimplifiedReddit.service.impl;
 
 import com.example.SimplifiedReddit.dto.SubredditDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.SubredditMapper;
 import com.example.SimplifiedReddit.model.Subreddit;
 import com.example.SimplifiedReddit.model.User;
@@ -17,7 +16,7 @@ import java.util.Optional;
 
 @Service
 public class SubredditServiceImpl implements SubredditService{
-    private SubredditRepository subredditRepository;
+    private final SubredditRepository subredditRepository;
     private final SubredditMapper subredditMapper;
     private final UserRepository userRepository;
 
@@ -33,28 +32,26 @@ public class SubredditServiceImpl implements SubredditService{
         return subredditRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Subreddit getById(Long id) throws ConflictException {
+        return subredditRepository.findById(id).orElseThrow(() -> new ConflictException("Subreddit with given id doesn't exist."));
+    }
+
     @Transactional
     @Override
-    public Subreddit createSubreddit(SubredditDTO subredditDTO) throws ConflictException {
-        Optional<User> optionalUser = userRepository.findById(subredditDTO.getUserId());
-
-        if (optionalUser.isEmpty()) {
-            throw new ConflictException("User with given id doesn't exist.");
-        }
+    public Subreddit createSubreddit(SubredditDTO subredditDTO) {
+        User user = userRepository.getById(subredditDTO.getUserId());
 
         Subreddit subreddit = subredditMapper.subredditDTOtoSubreddit(subredditDTO);
-        subreddit.setUser(optionalUser.get());
+        subreddit.setUser(user);
         return subredditRepository.save(subreddit);
     }
 
     @Transactional
     @Override
-    public void deleteSubreddit(Long id) throws NotFoundException {
-        Optional<Subreddit> optionalSubreddit = subredditRepository.findById(id);
-
-        if (optionalSubreddit.isEmpty()) {
-            throw new NotFoundException("Subreddit with given id doesn't exist.");
-        }
+    public void deleteSubreddit(Long id) {
+        subredditRepository.getById(id);
 
         subredditRepository.deleteById(id);
     }

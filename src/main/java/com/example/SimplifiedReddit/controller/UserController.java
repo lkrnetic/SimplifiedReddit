@@ -1,6 +1,7 @@
 package com.example.SimplifiedReddit.controller;
 
 import com.example.SimplifiedReddit.dto.UserDTO;
+import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.mapper.UserMapper;
 import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.service.UserService;
@@ -37,14 +38,11 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> editUser(@RequestBody UserDTO userDTO, @PathVariable Long id) {
-        Optional<User> optionalUser = userService.findById(id);
-
-        if (optionalUser.isEmpty()) {
-            return new ResponseEntity<>(HeaderUtil.createError("User with given id doesn't exist."), HttpStatus.BAD_REQUEST);
+        try {
+            return new ResponseEntity<>(userMapper.userToUserDTO(userService.editUser(userDTO, id)), HttpStatus.OK);
+        } catch (ConflictException exception) {
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
-
-        User editedUser = userService.editUser(userDTO);
-        return new ResponseEntity<>(userMapper.userToUserDTO(editedUser), HttpStatus.OK);
     }
 
     @PostMapping

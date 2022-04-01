@@ -1,5 +1,6 @@
 package com.example.SimplifiedReddit.model;
 
+import com.example.SimplifiedReddit.model.enums.VoteType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,6 +25,8 @@ public class Post {
     @Lob
     private String text;
 
+    private Integer voteCount;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(
             nullable = false,
@@ -40,4 +43,13 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    public Integer updateVoteCount(Post post, Vote vote) {
+        if (vote.getVoteType() == VoteType.UPVOTE) {
+            post.setVoteCount(post.getVoteCount() + 1);
+        }
+        else { post.setVoteCount(post.getVoteCount() - 1); }
+
+        return post.getVoteCount();
+    }
 }

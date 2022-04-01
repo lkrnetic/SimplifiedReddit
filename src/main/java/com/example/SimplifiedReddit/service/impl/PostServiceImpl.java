@@ -2,11 +2,8 @@ package com.example.SimplifiedReddit.service.impl;
 
 import com.example.SimplifiedReddit.dto.PostDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.PostMapper;
 import com.example.SimplifiedReddit.model.Post;
-import com.example.SimplifiedReddit.model.Subreddit;
-import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.repository.PostRepository;
 import com.example.SimplifiedReddit.repository.SubredditRepository;
 import com.example.SimplifiedReddit.repository.UserRepository;
@@ -38,51 +35,41 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Post getById(Long id) throws ConflictException {
+        return postRepository.findById(id).orElseThrow(() -> new ConflictException("Post with given id doesn't exist."));
+    }
+
     @Transactional
     @Override
-    public Post createPost(PostDTO postDTO) throws ConflictException  {
-        Optional<User> optionalUser = userRepository.findById(postDTO.getUserId());
+    public Post createPost(PostDTO postDTO) {
+        userRepository.getById(postDTO.getUserId());
 
-        if (optionalUser.isEmpty()) {
-            throw new ConflictException("User with given id doesn't exist.");
-        }
+        subredditRepository.getById(postDTO.getSubredditId());
 
-        Optional<Subreddit> optionalSubreddit = subredditRepository.findById(postDTO.getSubredditId());
-
-        if (optionalSubreddit.isEmpty()) {
-            throw new ConflictException("Subreddit with given id doesn't exist.");
-        }
+        postDTO.setVoteCount(0);
 
         return postRepository.save(postMapper.postDTOtoPost(postDTO));
     }
 
     @Transactional
     @Override
-    public Post editPost(PostDTO postDTO, Long id) throws NotFoundException, ConflictException {
-        Optional<Post> optionalPost = postRepository.findById(id);
+    public Post editPost(PostDTO postDTO, Long id) throws ConflictException {
+        Post post = postRepository.getById(id);
 
-        if (optionalPost.isEmpty()) {
-            throw new NotFoundException("Post with given id doesn't exist.");
-        }
+        userRepository.getById(postDTO.getUserId());
 
-        Optional<User> optionalUser = userRepository.findById(postDTO.getUserId());
-
-        if (optionalUser.isEmpty()) {
-            throw new NotFoundException("User with given id doesn't exist.");
-        }
-
-        if (!Objects.equals(optionalPost.get().getUser().getId(), postDTO.getUserId())) {
+        if (!Objects.equals(post.getUser().getId(), postDTO.getUserId())) {
             throw new ConflictException("User with given id isn't owner of the post.");
         }
 
-        Optional<Subreddit> optionalSubreddit = subredditRepository.findById(postDTO.getSubredditId());
-
-        if (optionalSubreddit.isEmpty()) {
-            throw new NotFoundException("Subreddit with given id doesn't exist.");
+        if (!Objects.equals(post.getSubreddit().getId(), postDTO.getSubredditId())) {
+            throw new ConflictException("Given id of subreddit doesn't belong to subreddit where post was created.");
         }
 
-        if (!Objects.equals(optionalPost.get().getSubreddit().getId(), postDTO.getSubredditId())) {
-            throw new ConflictException("Given id of subreddit doesn't belong to subreddit where post was created.");
+        if (!Objects.equals(post.getVoteCount(), postDTO.getVoteCount())) {
+            throw new ConflictException("Vote count can't be changed!");
         }
 
         postDTO.setId(id);
@@ -92,14 +79,10 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void deletePost(Long id) throws NotFoundException {
-        Optional<Post> optionalPost = postRepository.findById(id);
+    public void deletePost(Long id){
+       postRepository.getById(id);
 
-        if (optionalPost.isEmpty()) {
-            throw new NotFoundException("Post with given id doesn't exist.");
-        }
-
-        postRepository.deleteById(id);
+       postRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)

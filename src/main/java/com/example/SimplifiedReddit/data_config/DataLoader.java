@@ -16,7 +16,6 @@ import java.util.List;
 
 @Component
 public class DataLoader implements ApplicationRunner {
-
     private UserRepository userRepository;
     private SubredditRepository subredditRepository;
     private PostRepository postRepository;
@@ -39,12 +38,12 @@ public class DataLoader implements ApplicationRunner {
         Subreddit subreddit2 = Subreddit.builder().user(users.get(1)).description("description2").name("subreddit2").build();
         List<Subreddit> subreddits = subredditRepository.saveAll(List.of(subreddit1, subreddit2));
 
-        Post post1 = Post.builder().user(users.get(0)).subreddit(subreddits.get(0)).title("title1").text("text1").build();
-        Post post2 = Post.builder().user(users.get(0)).subreddit(subreddits.get(1)).title("title2").text("text2").build();
+        Post post1 = Post.builder().user(users.get(0)).subreddit(subreddits.get(0)).title("title1").text("text1").voteCount(0).build();
+        Post post2 = Post.builder().user(users.get(0)).subreddit(subreddits.get(1)).title("title2").text("text2").voteCount(0).build();
 
-        Post post3 = Post.builder().user(users.get(1)).subreddit(subreddits.get(0)).title("title1").text("text1").build();
-        Post post4 = Post.builder().user(users.get(1)).subreddit(subreddits.get(1)).title("title2").text("text2").build();
-        Post post5 = Post.builder().user(users.get(1)).subreddit(subreddits.get(1)).title("title1").text("text1").build();
+        Post post3 = Post.builder().user(users.get(1)).subreddit(subreddits.get(0)).title("title1").text("text1").voteCount(0).build();
+        Post post4 = Post.builder().user(users.get(1)).subreddit(subreddits.get(1)).title("title2").text("text2").voteCount(0).build();
+        Post post5 = Post.builder().user(users.get(1)).subreddit(subreddits.get(1)).title("title1").text("text1").voteCount(0).build();
         List<Post> posts = postRepository.saveAll(List.of(post1, post2, post3, post4, post5));
     }
 }

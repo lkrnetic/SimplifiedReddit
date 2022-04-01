@@ -2,7 +2,6 @@ package com.example.SimplifiedReddit.service.impl;
 
 import com.example.SimplifiedReddit.dto.CommentDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.CommentMapper;
 import com.example.SimplifiedReddit.model.Comment;
 import com.example.SimplifiedReddit.repository.CommentRepository;
@@ -36,31 +35,30 @@ public class CommentServiceImpl implements CommentService {
         return commentRepository.findById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public Comment createComment(CommentDTO commentDTO) throws ConflictException {
-        userRepository.findById(commentDTO.getUserId())
-                .orElseThrow(() -> new ConflictException("User with given id doesn't exist."));
-
-        postRepository.findById(commentDTO.getPostId())
-                .orElseThrow(() -> new ConflictException("Post with given id doesn't exist."));
-
-        Comment comment = commentMapper.commentDTOtoComment(commentDTO);
-
-        return commentRepository.save(comment);
+    public Comment getById(Long id) throws ConflictException {
+        return commentRepository.findById(id).orElseThrow(() -> new ConflictException("Comment with given id doesn't exist."));
     }
 
     @Transactional
     @Override
-    public Comment editComment(CommentDTO commentDTO, Long id) throws NotFoundException, ConflictException {
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new ConflictException("Comment with given id doesn't exist."));
+    public Comment createComment(CommentDTO commentDTO) {
+        userRepository.getById(commentDTO.getUserId());
 
-        userRepository.findById(commentDTO.getUserId())
-                .orElseThrow(() -> new NotFoundException("User with given id doesn't exist."));
+        postRepository.getById(commentDTO.getPostId());
 
-        postRepository.findById(commentDTO.getPostId())
-                .orElseThrow(() -> new NotFoundException("Post with given id doesn't exist."));
+        return commentRepository.save(commentMapper.commentDTOtoComment(commentDTO));
+    }
+
+    @Transactional
+    @Override
+    public Comment editComment(CommentDTO commentDTO, Long id) throws ConflictException {
+        Comment comment = commentRepository.getById(id);
+
+        userRepository.getById(commentDTO.getUserId());
+
+        postRepository.getById(commentDTO.getPostId());
 
         if (!Objects.equals(comment.getPost().getId(), commentDTO.getPostId())) {
             throw new ConflictException("Given id of post doesn't belong to post where comment was created.");
@@ -77,9 +75,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void deleteComment(Long id) throws NotFoundException {
-        commentRepository.delete(commentRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Subreddit with given id doesn't exist.")));
+    public void deleteComment(Long id) {
+        Comment comment = commentRepository.getById(id);
+
+        commentRepository.delete(comment);
     }
 
     @Transactional(readOnly = true)
