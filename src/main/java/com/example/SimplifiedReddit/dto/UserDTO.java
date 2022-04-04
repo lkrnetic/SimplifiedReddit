@@ -1,5 +1,6 @@
 package com.example.SimplifiedReddit.dto;
 
+import com.example.SimplifiedReddit.model.Subreddit;
 import com.example.SimplifiedReddit.model.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +26,6 @@ public class UserDTO {
     private String password;
 
     private UserRole role;
+
+    private List<Subreddit> followedSubreddits;
 }

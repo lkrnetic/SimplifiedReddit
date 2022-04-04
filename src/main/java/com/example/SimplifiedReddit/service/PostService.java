@@ -2,7 +2,6 @@ package com.example.SimplifiedReddit.service;
 
 import com.example.SimplifiedReddit.dto.PostDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.model.Post;
 
 import java.util.List;

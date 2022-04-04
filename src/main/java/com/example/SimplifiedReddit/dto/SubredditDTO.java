@@ -21,6 +21,6 @@ public class SubredditDTO {
     private String description;
 
     @NotNull(message = "User id must not be null.")
-    @Positive(message = "Username id shouldn't be negative.")
+    @Positive(message = "User id shouldn't be negative.")
     private Long userId;
 }

@@ -9,8 +9,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Table(name="app_user")
 @Data
@@ -38,6 +40,9 @@ public class User implements UserDetails {
     private Boolean locked = false;
 
     private Boolean enabled = false;
+
+    @OneToMany(mappedBy = "user")
+    private List<Subreddit> followedSubreddits = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
