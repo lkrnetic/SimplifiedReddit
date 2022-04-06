@@ -7,7 +7,8 @@ import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.model.enums.UserRole;
 import com.example.SimplifiedReddit.repository.UserRepository;
 import com.example.SimplifiedReddit.service.UserService;
-import org.mapstruct.MappingTarget;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,8 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
     private final static String USER_NOT_FOUND_MSG = "user with email %s not found";
@@ -28,6 +31,27 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        /*
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                String.format(USER_NOT_FOUND_MSG, email)));
+
+         */
+        User user = userRepository.getByEmail(email);
+        if(user == null) {
+            log.error("User not found in the database");
+            throw new UsernameNotFoundException("User not found in the database");
+        } else {
+            log.info("User found in the database: {}", email);
+            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            authorities.add(new SimpleGrantedAuthority(user.getRole().name()));
+            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -50,11 +74,13 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException(
-                                String.format(USER_NOT_FOUND_MSG, email)));
+    public User getByEmail(String email) throws ConflictException {
+        return userRepository.findByEmail(email).orElseThrow(() -> new ConflictException("User with given email doesn't exist."));
+    }
+
+    @Override
+    public User getByUsername(String username) throws ConflictException {
+        return userRepository.getByUsername(username);
     }
 
     @Transactional

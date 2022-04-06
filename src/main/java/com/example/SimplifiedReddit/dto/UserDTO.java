@@ -8,12 +8,13 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
+
     private Long id;
 
     @Email(message = "Email must be in appropriate format.")
@@ -27,5 +28,6 @@ public class UserDTO {
 
     private UserRole role;
 
-    private List<Subreddit> followedSubreddits;
+    private Set<Subreddit> followedSubreddits;
+
 }

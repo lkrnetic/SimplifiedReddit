@@ -1,8 +1,8 @@
 package com.example.SimplifiedReddit.controller;
 
 import com.example.SimplifiedReddit.dto.SubredditDTO;
+import com.example.SimplifiedReddit.dto.SubredditFollowerDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.mapper.SubredditMapper;
 import com.example.SimplifiedReddit.service.SubredditService;
 import com.example.SimplifiedReddit.util.HeaderUtil;
@@ -55,6 +55,17 @@ public class SubredditController {
             subredditService.deleteSubreddit(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (ConflictException exception) {
+            return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/createSubredditFollower")
+    public ResponseEntity<?> createSubredditFollower(@Valid @RequestBody SubredditFollowerDTO subredditFollowerDTO) {
+        try {
+            subredditService.createSubredditFollower(subredditFollowerDTO);
+            return new ResponseEntity<>("kansas", HttpStatus.OK);
+        }
+        catch (ConflictException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }

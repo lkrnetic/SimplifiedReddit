@@ -1,6 +1,7 @@
 package com.example.SimplifiedReddit.model;
 
 import com.example.SimplifiedReddit.model.enums.VoteType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,11 +24,13 @@ public class Vote {
     @Enumerated(EnumType.STRING)
     private VoteType voteType;
 
+    @JsonBackReference(value="voteCreatedInPost")
     @NotNull
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @JsonBackReference(value="voteCreatedByUser")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

@@ -1,6 +1,7 @@
 package com.example.SimplifiedReddit.service.impl;
 
 import com.example.SimplifiedReddit.dto.SubredditDTO;
+import com.example.SimplifiedReddit.dto.SubredditFollowerDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.mapper.SubredditMapper;
 import com.example.SimplifiedReddit.model.Subreddit;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class SubredditServiceImpl implements SubredditService{
@@ -62,4 +64,21 @@ public class SubredditServiceImpl implements SubredditService{
         return subredditRepository.findAll();
     }
 
+    public void createSubredditFollower(SubredditFollowerDTO subredditFollowerDTO)  throws ConflictException {
+        User user = userRepository.getById(subredditFollowerDTO.getUserId());
+        Subreddit subredditToFollow = subredditRepository.getById(subredditFollowerDTO.getSubredditId());
+
+        Set<Subreddit> followedSubreddits = user.getFollowedSubreddits();
+
+        boolean subredditAlreadyFollowed  = followedSubreddits.contains(subredditToFollow);
+
+        if (subredditAlreadyFollowed) {
+            throw new ConflictException("User with given id is already follower of given subreddit.");
+        }
+
+        user.getFollowedSubreddits().add(subredditToFollow);
+        subredditToFollow.getFollowers().add(user);
+
+        userRepository.save(user);
+    }
 }

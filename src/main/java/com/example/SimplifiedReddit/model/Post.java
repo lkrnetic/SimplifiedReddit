@@ -1,6 +1,8 @@
 package com.example.SimplifiedReddit.model;
 
 import com.example.SimplifiedReddit.model.enums.VoteType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,6 +29,7 @@ public class Post {
 
     private Integer voteCount;
 
+    @JsonBackReference(value="userThatCreatedPost")
     @ManyToOne(fetch = LAZY)
     @JoinColumn(
             nullable = false,
@@ -34,6 +37,7 @@ public class Post {
     )
     private User user;
 
+    @JsonBackReference(value="subredditPosts")
     @ManyToOne
     @JoinColumn(
             nullable = false,
@@ -41,6 +45,7 @@ public class Post {
     )
     private Subreddit subreddit;
 
+    @JsonManagedReference(value="postComments")
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
 

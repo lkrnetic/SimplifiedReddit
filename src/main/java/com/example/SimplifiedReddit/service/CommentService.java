@@ -1,14 +1,9 @@
 package com.example.SimplifiedReddit.service;
 
 import com.example.SimplifiedReddit.dto.CommentDTO;
-import com.example.SimplifiedReddit.dto.PostDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.model.Comment;
-import com.example.SimplifiedReddit.model.Post;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
