@@ -63,7 +63,7 @@ public class SubredditController {
     public ResponseEntity<?> createSubredditFollower(@Valid @RequestBody SubredditFollowerDTO subredditFollowerDTO) {
         try {
             subredditService.createSubredditFollower(subredditFollowerDTO);
-            return new ResponseEntity<>("kansas", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         catch (ConflictException exception) {
             return new ResponseEntity<>(HeaderUtil.createError(exception.getMessage()), HttpStatus.BAD_REQUEST);

@@ -3,6 +3,7 @@ package com.example.SimplifiedReddit.service.impl;
 import com.example.SimplifiedReddit.dto.UserDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.mapper.UserMapper;
+import com.example.SimplifiedReddit.model.Subreddit;
 import com.example.SimplifiedReddit.model.User;
 import com.example.SimplifiedReddit.model.enums.UserRole;
 import com.example.SimplifiedReddit.repository.UserRepository;
@@ -16,9 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
+
 @Slf4j
 @Service
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -91,6 +91,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setEnabled(true);
         user.setRole(role);
+        user.setFollowedSubreddits(new HashSet<Subreddit>());
         return userRepository.save(user);
     }
 
