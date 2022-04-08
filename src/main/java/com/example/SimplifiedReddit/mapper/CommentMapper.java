@@ -1,7 +1,6 @@
 package com.example.SimplifiedReddit.mapper;
 
 import com.example.SimplifiedReddit.dto.CommentDTO;
-import com.example.SimplifiedReddit.dto.PostDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.model.Comment;
 import com.example.SimplifiedReddit.model.Post;

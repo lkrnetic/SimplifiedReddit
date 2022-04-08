@@ -11,6 +11,8 @@ public interface UserService {
     Optional<User> findByEmail(String email);
 
     User getById(Long id) throws ConflictException;
+    User getByEmail(String email) throws ConflictException;
+    User getByUsername(String username) throws ConflictException;
 
     User createUser(UserDTO userDTO);
     User editUser(UserDTO userDTO, Long id) throws ConflictException;

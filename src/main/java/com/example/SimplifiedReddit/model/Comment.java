@@ -1,5 +1,6 @@
 package com.example.SimplifiedReddit.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,10 +20,12 @@ public class Comment {
     @NotBlank
     private String text;
 
+    @JsonBackReference(value="postComments")
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @JsonBackReference(value="userThatCreatedComment")
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

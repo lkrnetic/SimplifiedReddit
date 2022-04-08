@@ -1,8 +1,8 @@
 package com.example.SimplifiedReddit.service;
 
 import com.example.SimplifiedReddit.dto.SubredditDTO;
+import com.example.SimplifiedReddit.dto.SubredditFollowerDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
-import com.example.SimplifiedReddit.exception.NotFoundException;
 import com.example.SimplifiedReddit.model.Subreddit;
 
 import java.util.List;
@@ -18,5 +18,6 @@ public interface SubredditService {
 
     List<Subreddit> findAll();
 
+    void createSubredditFollower(SubredditFollowerDTO subredditFollowerDTO) throws ConflictException;
 }
 

@@ -1,6 +1,7 @@
 package com.example.SimplifiedReddit.mapper;
 
 import com.example.SimplifiedReddit.dto.UserDTO;
+
 import com.example.SimplifiedReddit.model.User;
 import org.mapstruct.Mapper;
 

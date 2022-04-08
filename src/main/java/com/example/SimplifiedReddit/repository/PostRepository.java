@@ -9,7 +9,11 @@ import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
+    Post getById(Long id);
+
     Optional<Post> findById(Long id);
+
     List<Post> findAllByUserId(Long userId);
+
     List<Post> findAllBySubredditId(Long subredditId);
 }

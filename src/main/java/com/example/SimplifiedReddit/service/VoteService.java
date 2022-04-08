@@ -3,7 +3,6 @@ package com.example.SimplifiedReddit.service;
 import com.example.SimplifiedReddit.dto.VoteDTO;
 import com.example.SimplifiedReddit.exception.ConflictException;
 import com.example.SimplifiedReddit.model.Vote;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 

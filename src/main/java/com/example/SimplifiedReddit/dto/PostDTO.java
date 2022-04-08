@@ -22,7 +22,7 @@ public class PostDTO {
     private Integer voteCount;
 
     @NotNull(message = "User id must not be null.")
-    @Positive(message = "Username id shouldn't be negative.")
+    @Positive(message = "User id shouldn't be negative.")
     private Long userId;
 
     @NotNull(message = "Subreddit id must not be null.")
